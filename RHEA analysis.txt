@@ -1,0 +1,42 @@
+Each game tick (keep action log file + evo log file):
+
+[CONVERGENCE], [ENTROPY_E] [ACTIONS EXPLORED], [REC ACTION PERC] [ENTROPY_I] [ACTIONS REC], [STAT SUMMARY FITNESS]
+
+End game (game file): 
+
+Evo, [AVG CONVERGENCE], [STAT SUMMARY FINAL BEST FITNESS], [PERC LEVEL EXPLORATION] [PERC LEVEL EXPLORATION FM]
+Result, [WIN] [SCORE] [TICK], [ENTROPY_C] [ACTIONS CHOSEN]
+
+
+Evo: in result() function of agent
+------------------
+
+CONVERGENCE: generation number when ACTION was found as best and not changed / total number generations : [0,1] - 0 means immediately converges, 1 means not enough time
+
+
+
+ACTIONS CHOSEN: array (NULL LEFT RIGHT UP DOWN USE) - number of times each was chosen as the action to play in a game tick (count actions logged!) / total number game ticks : [0,1] - 0 means not chosen at all, 1 means chosen all the time, -1 means action not available
+
+ENTROPY_C: Shannon entropy over ACTIONS CHOSEN array (times 100 the values, ignore -1)
+
+
+
+ACTIONS EXPLORED: array (NULL LEFT RIGHT UP DOWN USE) - number of times each was the first of one individual during evolution in one game tick (duplicate elites) / population_size * ind_length * number generations : [0,1] - 0 means not explored at all, 1 means explored a lot, -1 means action not available 
+
+ENTROPY_E: Shannon entropy over ACTIONS EXPLORE array (times 100 the values, ignore -1)
+
+
+
+REC ACTION PERC: Percentage of individuals in the final generation which recommend the same action as best individual (indecisivness)
+
+ACTIONS REC: array (NULL LEFT RIGHT UP DOWN USE) - number of times each was recommended by one individual in the final population at the end of evolution / population_size : [0,1] - 0 means not recommended at all, 1 means recommended a lot, -1 means action not available 
+
+ENTROPY_I: Shannon entropy over ACTIONS REC array (times 100 the values, ignore -1)
+
+
+
+STAT SUMMARY FITNESS: includes all current stat summary plus median, first quartile, third quartile for box plot and shannon entropy (store arraylist of values)
+
+
+
+PERC LEVEL EXPLORATION: percentage of level explored [0,1] - keep position vectors in a Set, count how many, divide by grid size
