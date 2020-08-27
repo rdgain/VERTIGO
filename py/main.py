@@ -1,5 +1,7 @@
 import os
 
+__author__ = 'dperez'
+
 from compute import *
 from graphs import drawLivePlot
 import sys

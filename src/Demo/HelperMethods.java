@@ -1,4 +1,4 @@
-package VERTIGO;
+package Demo;
 
 import controllers.singlePlayer.RHv2.utils.ParameterSet;
 
@@ -8,9 +8,9 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.*;
 
-import static VERTIGO.VertigoView.resultFile;
+import static Demo.RHDemo.closePlots;
+import static Demo.RHDemo.resultFile;
 
-@SuppressWarnings("UnnecessaryLocalVariable")
 public class HelperMethods {
 
     static String[] getGames() {
@@ -102,7 +102,7 @@ public class HelperMethods {
     static DefaultTableModel createEvoResTableModel() {
         DefaultTableModel evoResTableModel = new DefaultTableModel(0, 0);
         // Evo, [AVG CONVERGENCE], [STAT SUMMARY FINAL BEST FITNESS 9], [PERC LEVEL EXPLORATION] [PERC LEVEL EXPLORATION FM], [FIRST_TICK_WIN] [FIRST_TICK_LOSS]
-        String[] header = new String[]{"Avg Convergence", "Mean Fitness", "% Lvl Explored",
+        String header[] = new String[]{"Avg Convergence", "Mean Fitness", "% Lvl Explored",
                 "% Lvl Explored FM", "First Tick Win", "First Tick Loss"};
         evoResTableModel.setColumnIdentifiers(header);
         return evoResTableModel;
@@ -123,7 +123,7 @@ public class HelperMethods {
     static DefaultTableModel createGameResTableModel() {
         DefaultTableModel gameResTableModel = new DefaultTableModel(0, 0);
         // Result, [WIN] [SCORE] [TICK], [ENTROPY_C] [ACTIONS CHOSEN]
-        String[] header = new String[]{"Win", "Score", "Ticks", "Action Entropy"};
+        String header[] = new String[]{"Win", "Score", "Ticks", "Action Entropy"};
         gameResTableModel.setColumnIdentifiers(header);
         return gameResTableModel;
     }
@@ -141,8 +141,16 @@ public class HelperMethods {
     }
 
 
-    static void closeAllPlots(String evoFile, JButton readyB,
-                              JComboBox<String> gameOptions, JComboBox<Integer> levelOptions) {
+    static void closeAllPlots(String evoFile, JButton readyB, JButton closeB,
+                              JComboBox gameOptions, JComboBox levelOptions) {
+        closeB.setEnabled(true);
+        while (!closePlots) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+            }
+        }
+        closePlots = false;
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(new File(evoFile)));
             writer.write("End of game" + "\n");
@@ -155,8 +163,8 @@ public class HelperMethods {
         levelOptions.setEnabled(true);
     }
 
-    static JPanel getGamePanel(JComboBox<String> gameOptions, JComboBox<Integer> levelOptions, JButton readyB, JButton startB,
-                               JButton pauseB, JButton stopB, JScrollPane resEvo, JScrollPane resGame,
+    static JPanel getGamePanel(JComboBox gameOptions, JComboBox levelOptions, JButton readyB, JButton startB,
+                               JButton pauseB, JButton stopB, JButton closeB, JScrollPane resEvo, JScrollPane resGame,
                                JToggleButton jtb1, JToggleButton jtb2) {
         // Add things to game panel
         JPanel gamePanel = new JPanel();
@@ -197,6 +205,10 @@ public class HelperMethods {
         c.gridx = 0;
         c.gridwidth = 4;
         gamePanel.add(resGame,c);
+        c.gridy = 11;
+        c.gridx = 1;
+        c.gridwidth = 1;
+        gamePanel.add(closeB,c);
         return gamePanel;
     }
 

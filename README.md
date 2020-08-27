@@ -10,4 +10,4 @@ In order to run the program effectively, the following dependencies should be co
 - Python library NumPy
 - Java 1.8 or above
 
-Run class VERTIGO.VERTIGO in the Java project. 
+Run class Demo.RHDemo in the Java project. 
