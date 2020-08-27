@@ -34,7 +34,7 @@ import tools.*;
 import tools.pathfinder.Node;
 import tools.pathfinder.PathFinder;
 
-import static Demo.RHDemo.*;
+import static VERTIGO.VERTIGO.*;
 import static tools.EvoAnalyzer.actionsToString;
 import static tools.EvoAnalyzer.analysis;
 
