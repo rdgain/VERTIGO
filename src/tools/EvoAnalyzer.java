@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import static VERTIGO.VERTIGO.resultWriter;
+import static VERTIGO.VertigoView.resultWriter;
 
 public class EvoAnalyzer {
     public static boolean analysis = true; // if false, no analysis will be recorded during the play

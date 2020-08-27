@@ -35,6 +35,7 @@ import tools.pathfinder.Node;
 import tools.pathfinder.PathFinder;
 
 import static VERTIGO.VERTIGO.*;
+import static VERTIGO.VertigoView.*;
 import static tools.EvoAnalyzer.actionsToString;
 import static tools.EvoAnalyzer.analysis;
 
@@ -961,6 +962,9 @@ public abstract class Game {
 
 				// Update the frame title to reflect current score and tick.
 				this.setTitle(frame);
+
+				// Repaint for plots
+				frame.repaint();
 			} else {
 				frame.setTitle("PAUSED");
 			}

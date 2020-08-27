@@ -1,7 +1,7 @@
 package VERTIGO;
 
+import VERTIGO.plots.ConvergencePlot;
 import controllers.singlePlayer.RHv2.utils.ParameterSet;
-import core.ArcadeMachine;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -29,6 +29,8 @@ public class VertigoView extends JFrame {
     String gamespath = "examples/gridphysics/";
     String[] games;
     Integer[] levels = new Integer[]{0, 1, 2, 3, 4};
+
+    ConvergencePlot covPlot;
 
     public VertigoView() {
 
@@ -133,10 +135,6 @@ public class VertigoView extends JFrame {
             }
         });
 
-        // Add all the things to the game panel
-        JPanel gamePanel = getGamePanel(gameOptions, levelOptions, readyB, startB, pauseB, stopB, evoResPanel,
-                gameResPanel, jtb1, jtb2);
-
         // Create instructions panel
         JPanel instructions = new JPanel();
         JLabel insText = new JLabel("<html><div width=500>" +
@@ -157,6 +155,8 @@ public class VertigoView extends JFrame {
 
         // Make side panel for plots
         JPanel analysis = new JPanel();
+        covPlot = new ConvergencePlot();
+        analysis.add(covPlot);
 
         // Put all together
         JPanel comboPanel = new JPanel();
@@ -186,6 +186,7 @@ public class VertigoView extends JFrame {
                 // Log files
                 String actionFile = "py/files/actions_" + game_idx + "_" + lvl_idx + ".log";
                 String evoFile = "py/files/evo_" + game_idx + "_" + lvl_idx + ".log";
+                covPlot.setDataFiles(actionFile, evoFile);
 
                 try {
                     new FileWriter(new File(actionFile));
@@ -210,27 +211,12 @@ public class VertigoView extends JFrame {
                 getContentPane().repaint();
                 pack();
 
-                //Play game with params
-                try {
-                    ArcadeMachine.runOneExpGame(this, gp, map, level, true, RHEA,
-                            actionFile, evoFile, seed, 0, ps);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
-                //End of run, reset
-                startGame = false;
-                stopGame = false;
-                pauseGame = false;
-                readyGame = false;
-                pauseB.setEnabled(false);
-                stopB.setEnabled(false);
-
-                // Display game result in frame
-                parseResult(evoResTableModel, gameResTableModel);
-
-                // Wait for all plots to be closed before proceeding
-                closeAllPlots(evoFile, readyB, gameOptions, levelOptions);
+                // Start game on separate thread
+                GameRunner gr = new GameRunner(this, gp, map, level, true, RHEA,
+                        actionFile, evoFile, seed, 0, ps, gameOptions, levelOptions, evoResTableModel, gameResTableModel,
+                        covPlot);
+                Thread t = new Thread(gr);
+                t.start();
             }
         });
 
@@ -249,6 +235,10 @@ public class VertigoView extends JFrame {
             levelOptions.setEnabled(false);
         });
         readyB.setToolTipText("Lock game and level and start graph display (can still adjust other parameters).");
+
+        // Add all the things to the game panel
+        JPanel gamePanel = getGamePanel(gameOptions, levelOptions, readyB, startB, pauseB, stopB, evoResPanel,
+                gameResPanel, jtb1, jtb2);
 
         // Add tabs to main panel and panel to frame
         mainPanel.addTab("Game", gamePanel);
@@ -276,4 +266,11 @@ public class VertigoView extends JFrame {
         }
     }
 
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        if (covPlot != null) {
+            covPlot.paintComponent(g);
+        }
+    }
 }
