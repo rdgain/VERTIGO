@@ -200,11 +200,20 @@ public class VertigoView extends JFrame {
         buttons.add(loseToggle);
 
         analysis.add(buttons);
+        analysis.setVisible(false);
 
         // Put all together
         JPanel comboPanel = new JPanel();
         comboPanel.add(mainPanel);
         comboPanel.add(analysis);
+
+        JButton button = new JButton("Analysis");
+        button.addActionListener(e -> {
+            analysis.setVisible(!analysis.isVisible());
+            pack();
+            repaint();
+        });
+        comboPanel.add(button);
 
         // Buttons
         // Create things for game panel

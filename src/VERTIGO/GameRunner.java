@@ -77,6 +77,7 @@ public class GameRunner implements Runnable {
         parseResult(evoResTableModel, gameResTableModel);
 
         // Wait for all plots to be closed before proceeding
+        linePlot.setDataFiles(null, null);
         closeAllPlots(evoFile, readyB, gameOptions, levelOptions);
     }
 }

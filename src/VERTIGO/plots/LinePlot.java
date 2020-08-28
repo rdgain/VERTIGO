@@ -81,8 +81,6 @@ public class LinePlot extends JComponent {
         yLose = new ArrayList<>();
         xWin = new ArrayList<>();
         xLose = new ArrayList<>();
-        evoFile = null;
-        actFile = null;
     }
 
     public void setDataFiles(String act, String evo) {
