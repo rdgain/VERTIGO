@@ -1,6 +1,6 @@
 package VERTIGO;
 
-import VERTIGO.plots.ConvergencePlot;
+import VERTIGO.plots.LinePlot;
 import controllers.singlePlayer.RHv2.utils.ParameterSet;
 import core.ArcadeMachine;
 
@@ -26,13 +26,13 @@ public class GameRunner implements Runnable {
     JComboBox<String> gameOptions; JComboBox<Integer> levelOptions;
     DefaultTableModel evoResTableModel, gameResTableModel;
 
-    ConvergencePlot covPlot;
+    LinePlot linePlot;
 
     public GameRunner(JFrame frame, JPanel gamePanel, String game_file, String level_file, boolean visuals,
                       String agentNames, String actionFile, String evoFile, int randomSeed, int playerID, ParameterSet params,
                       JComboBox<String> gameOptions, JComboBox<Integer> levelOptions, DefaultTableModel evoResTableModel, DefaultTableModel gameResTableModel,
 
-                      ConvergencePlot covPlot) {
+                      LinePlot linePlot) {
 
         this.frame = frame;
         this.gamePanel = gamePanel;
@@ -51,11 +51,13 @@ public class GameRunner implements Runnable {
         this.evoResTableModel = evoResTableModel;
         this.gameResTableModel = gameResTableModel;
 
-        this.covPlot = covPlot;
+        this.linePlot = linePlot;
     }
 
     @Override
     public void run() {
+        linePlot.reset();
+
         //Play game with params
         try {
             ArcadeMachine.runOneExpGame(frame, gamePanel, game_file, level_file, visuals, agentNames, actionFile, evoFile, randomSeed, playerID, params);
@@ -75,7 +77,6 @@ public class GameRunner implements Runnable {
         parseResult(evoResTableModel, gameResTableModel);
 
         // Wait for all plots to be closed before proceeding
-        covPlot.setDataFiles(null, null);
         closeAllPlots(evoFile, readyB, gameOptions, levelOptions);
     }
 }

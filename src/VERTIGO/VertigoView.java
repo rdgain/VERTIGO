@@ -1,11 +1,13 @@
 package VERTIGO;
 
-import VERTIGO.plots.ConvergencePlot;
+import VERTIGO.plots.LinePlot;
 import controllers.singlePlayer.RHv2.utils.ParameterSet;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -30,7 +32,7 @@ public class VertigoView extends JFrame {
     String[] games;
     Integer[] levels = new Integer[]{0, 1, 2, 3, 4};
 
-    ConvergencePlot covPlot;
+    LinePlot linePlot;
 
     public VertigoView() {
 
@@ -155,8 +157,49 @@ public class VertigoView extends JFrame {
 
         // Make side panel for plots
         JPanel analysis = new JPanel();
-        covPlot = new ConvergencePlot();
-        analysis.add(covPlot);
+        analysis.setLayout(new BoxLayout(analysis, BoxLayout.Y_AXIS));
+        linePlot = new LinePlot();
+        JButton convToggle = new JButton("Convergence");
+        convToggle.addActionListener(e -> {
+            linePlot.toggleConvergence();
+            repaint();
+        });
+        JButton scoreToggle = new JButton("Score");
+        scoreToggle.addActionListener(e -> {
+            linePlot.toggleScore();
+            repaint();
+        });
+        JButton scorePlusToggle = new JButton("Score+");
+        scorePlusToggle.addActionListener(e -> {
+            linePlot.toggleScorePlus();
+            repaint();
+        });
+        JButton scoreMinusToggle = new JButton("Score-");
+        scoreMinusToggle.addActionListener(e -> {
+            linePlot.toggleScoreMinus();
+            repaint();
+        });
+        JButton winToggle = new JButton("Win");
+        scoreMinusToggle.addActionListener(e -> {
+            linePlot.toggleWin();
+            repaint();
+        });
+        JButton loseToggle = new JButton("Lose");
+        scoreMinusToggle.addActionListener(e -> {
+            linePlot.toggleLose();
+            repaint();
+        });
+        analysis.add(linePlot);
+
+        JPanel buttons = new JPanel();
+        buttons.add(convToggle);
+        buttons.add(scoreToggle);
+        buttons.add(scorePlusToggle);
+        buttons.add(scoreMinusToggle);
+        buttons.add(winToggle);
+        buttons.add(loseToggle);
+
+        analysis.add(buttons);
 
         // Put all together
         JPanel comboPanel = new JPanel();
@@ -186,7 +229,7 @@ public class VertigoView extends JFrame {
                 // Log files
                 String actionFile = "py/files/actions_" + game_idx + "_" + lvl_idx + ".log";
                 String evoFile = "py/files/evo_" + game_idx + "_" + lvl_idx + ".log";
-                covPlot.setDataFiles(actionFile, evoFile);
+                linePlot.setDataFiles(actionFile, evoFile);
 
                 try {
                     new FileWriter(new File(actionFile));
@@ -214,7 +257,7 @@ public class VertigoView extends JFrame {
                 // Start game on separate thread
                 GameRunner gr = new GameRunner(this, gp, map, level, true, RHEA,
                         actionFile, evoFile, seed, 0, ps, gameOptions, levelOptions, evoResTableModel, gameResTableModel,
-                        covPlot);
+                        linePlot);
                 Thread t = new Thread(gr);
                 t.start();
             }
@@ -269,8 +312,8 @@ public class VertigoView extends JFrame {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        if (covPlot != null) {
-            covPlot.paintComponent(g);
+        if (linePlot != null) {
+            linePlot.paintComponent(g);
         }
     }
 }
