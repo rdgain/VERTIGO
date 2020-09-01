@@ -140,21 +140,6 @@ public class HelperMethods {
         return gameResPanel;
     }
 
-
-    static void closeAllPlots(String evoFile, JButton readyB,
-                              JComboBox<String> gameOptions, JComboBox<Integer> levelOptions) {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(new File(evoFile)));
-            writer.write("End of game" + "\n");
-            writer.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        readyB.setEnabled(true);
-        gameOptions.setEnabled(true);
-        levelOptions.setEnabled(true);
-    }
-
     static JPanel getGamePanel(JComboBox<String> gameOptions, JComboBox<Integer> levelOptions, JButton readyB, JButton startB,
                                JButton pauseB, JButton stopB, JScrollPane resEvo, JScrollPane resGame,
                                JToggleButton jtb1, JToggleButton jtb2) {

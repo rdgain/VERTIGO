@@ -78,6 +78,8 @@ public class GameRunner implements Runnable {
 
         // Wait for all plots to be closed before proceeding
         linePlot.setDataFiles(null, null);
-        closeAllPlots(evoFile, readyB, gameOptions, levelOptions);
+        readyB.setEnabled(true);
+        gameOptions.setEnabled(true);
+        levelOptions.setEnabled(true);
     }
 }

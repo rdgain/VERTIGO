@@ -236,8 +236,9 @@ public class VertigoView extends JFrame {
                 String level = gamespath + games[game_idx] + "_lvl" + lvl_idx + ".txt";
 
                 // Log files
-                String actionFile = "py/files/actions_" + game_idx + "_" + lvl_idx + ".log";
-                String evoFile = "py/files/evo_" + game_idx + "_" + lvl_idx + ".log";
+                long time = System.currentTimeMillis();
+                String actionFile = "py/files/actions_" + game_idx + "_" + lvl_idx + "_" + time + ".log";
+                String evoFile = "py/files/evo_" + game_idx + "_" + lvl_idx + "_" + time + ".log";
                 linePlot.setDataFiles(actionFile, evoFile);
 
                 try {
