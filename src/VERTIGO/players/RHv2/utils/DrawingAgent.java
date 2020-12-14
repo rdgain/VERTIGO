@@ -113,7 +113,7 @@ public class DrawingAgent {
                     int gr = (int)( ratio * goodAction.getGreen() + (1-ratio) * badAction.getGreen() );
                     int bl = (int)( ratio * goodAction.getBlue() + (1-ratio) * badAction.getBlue() );
                     g.setColor(new Color(re, gr, bl, alphaThink));
-                    double size = ratio * block_size/2;
+                    double size = (0.2+ratio) * block_size/2;
                     g.fillOval((int) (pos.x + block_size / 2 - size/2),
                             (int) (pos.y + block_size / 2 - size/2),
                             (int) size,
