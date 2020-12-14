@@ -77,7 +77,7 @@ public class VertigoView extends JFrame {
         // Main panel
         JTabbedPane mainPanel = new JTabbedPane();
 
-        // Creating things for parameter panel  TODO tooltips
+        // Creating things for parameter panel
         JPanel params = new JPanel();
         params.setLayout(new GridLayout(20, 4, 20, 0));
 
