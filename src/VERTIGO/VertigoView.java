@@ -212,6 +212,8 @@ public class VertigoView extends JFrame {
                 "<li>Step 9: Click the \"Clear logs\" button to clean up the logs directory</li>" +
                 "<li>Repeat from step 1 with different settings. " +
                 "</div></html>");
+        insText.setFont(new Font(insText.getFont().getName(), Font.PLAIN, 18));
+
         instructions.add(insText);
 
         // Make side panel for plots
