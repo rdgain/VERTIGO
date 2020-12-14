@@ -1,38 +1,48 @@
 package VERTIGO;
 
+import VERTIGO.players.ParameterSet;
+import VERTIGO.players.sampleOLMCTSMacro.MCTSParams;
 import VERTIGO.plots.LinePlot;
-import controllers.singlePlayer.RHv2.utils.ParameterSet;
+import VERTIGO.players.RHv2.utils.RHEAParams;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Random;
 
 import static VERTIGO.HelperMethods.*;
-import static controllers.singlePlayer.RHv2.Agent.drawing;
-import static controllers.singlePlayer.RHv2.Agent.drawingWhat;
-import static controllers.singlePlayer.RHv2.utils.Constants.*;
-import static controllers.singlePlayer.RHv2.utils.Constants.DRAW_EXPLORATION;
+import static VERTIGO.players.RHv2.Agent.*;
+import static VERTIGO.players.RHv2.utils.Constants.*;
+import static VERTIGO.players.RHv2.utils.Constants.DRAW_EXPLORATION;
 
 public class VertigoView extends JFrame {
 
-    public static boolean startGame = false, pauseGame = false, stopGame = false, readyGame = false;
+    public static boolean startGame = false, pauseGame = false, stopGame = false;
     public static boolean drawHM = false, drawTH = false;
-    public static JButton pauseB, startB, stopB, readyB;
+    public static JButton pauseB, startB, stopB;
     public static BufferedWriter resultWriter;
     static File resultFile;
     String gamespath = "examples/gridphysics/";
     String[] games;
     Integer[] levels = new Integer[]{0, 1, 2, 3, 4};
+    String[] agents = new String[]{
+        "VERTIGO.players.RHv2.Agent",
+        "VERTIGO.players.sampleOLMCTSMacro.Agent",
+    };
+    ParameterSet[] parameterSets = new ParameterSet[] {
+            new RHEAParams(),
+            new MCTSParams()
+    };
 
     LinePlot linePlot;
+    int colorButSize = 20;
+    int maxParams = 40;
 
     public VertigoView() {
 
@@ -43,57 +53,80 @@ public class VertigoView extends JFrame {
         styleUI();
 
         // Setting up the JFrame
-        setTitle("VERTIGO 1.1");
+        setTitle("VERTIGO 1.2");
         setLayout(new GridBagLayout());
         getContentPane().setBackground(Color.black);
 
         // Create result dir, log dir and result writer
-        File dir = new File("py/files");
+        File dir = new File("logs");
         createDirs(dir);
-        File logDir = new File("logs");
-        createDirs(logDir);
         try {
-            resultFile = new File("py/files/results.log");
+            resultFile = new File("logs/results.log");
             resultWriter = new BufferedWriter(new FileWriter(resultFile, true));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        JButton clearFilesBut = new JButton("Clear logs");
+        clearFilesBut.addActionListener(e -> {
+            for(File file: Objects.requireNonNull(dir.listFiles())) {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            }
+        });
 
         // Main panel
         JTabbedPane mainPanel = new JTabbedPane();
 
-        // Creating things for parameter panel
+        // Creating things for parameter panel  TODO tooltips
         JPanel params = new JPanel();
-        params.setLayout(new GridLayout(15, 4, 20, 0));
-        ParameterSet paramSet = new ParameterSet();
+        params.setLayout(new GridLayout(20, 4, 20, 0));
 
-        String[] p = paramSet.getParams();
-        JLabel[] paramLabels = new JLabel[p.length];
-        for (int i = 0; i < paramLabels.length; i++) {
-            paramLabels[i] = new JLabel(p[i]);
-            paramLabels[i].setHorizontalAlignment(SwingConstants.RIGHT);
-        }
-
-        String[] v = paramSet.getDefaultValues();
-        Object[][] valueOptions = paramSet.getValueOptions();
-        JComponent[] paramInputs = new JComponent[v.length];
-        for (int i = 0; i < paramInputs.length; i++) {
-            if (valueOptions[i].length == 0) {
-                //it's a text field with default value in v
-                paramInputs[i] = new JTextField(v[i], 10);
-            } else {
-                paramInputs[i] = new JComboBox<>(valueOptions[i]);
-            }
-        }
-
+        JComboBox[] paramInputs = new JComboBox[maxParams];
+        JLabel[] paramLabels = new JLabel[maxParams];
         // Adding things to parameter panel
-        for (int i = 0; i < paramLabels.length; i++) {
+        for (int i = 0; i < maxParams; i++) {
+            paramLabels[i] = new JLabel("");
+            paramLabels[i].setVisible(false);
+            paramInputs[i] = new JComboBox<>(new Object[0]);
+            paramInputs[i].setVisible(false);
             params.add(paramLabels[i]);
             params.add(paramInputs[i]);
         }
 
+        JComboBox<String> agentOptions = new JComboBox<>(agents);
         JComboBox<String> gameOptions = new JComboBox<>(games);
         JComboBox<Integer> levelOptions = new JComboBox<>(levels);
+
+        agentOptions.addActionListener(e -> {
+            ParameterSet paramSet = parameterSets[agentOptions.getSelectedIndex()];
+            String[] p = paramSet.getParams();
+            String[] desc = paramSet.getParamDescriptions();
+
+            for (int i = 0; i < p.length; i++) {
+                paramLabels[i].setText(p[i]);
+                paramLabels[i].setToolTipText(desc[i]);
+                paramLabels[i].setHorizontalAlignment(SwingConstants.RIGHT);
+                paramLabels[i].setVisible(true);
+            }
+            String[] v = paramSet.getDefaultValues();
+            Object[][] valueOptions = paramSet.getValueOptions();
+            for (int i = 0; i < p.length; i++) {
+                paramInputs[i].setModel(new DefaultComboBoxModel(valueOptions[i]));
+                paramInputs[i].setVisible(true);
+                for (int j = 0; j < valueOptions[i].length; j++) {
+                    if (("" + valueOptions[i][j].toString()).equals(v[i])) {
+                        paramInputs[i].setSelectedIndex(j);
+                        break;
+                    }
+                }
+            }
+            for (int i = p.length; i < maxParams; i++) {
+                paramInputs[i].setVisible(false);
+                paramLabels[i].setVisible(false);
+                paramLabels[i].setToolTipText("");
+            }
+        });
+        agentOptions.setSelectedIndex(0);
 
         // Create result evo table
         DefaultTableModel evoResTableModel = createEvoResTableModel();
@@ -119,6 +152,15 @@ public class VertigoView extends JFrame {
                     drawingWhat = DRAW_THINKING;
             }
         });
+        JButton heatmapColorChooser = new JButton();
+        heatmapColorChooser.setPreferredSize(new Dimension(colorButSize, colorButSize));
+        heatmapColorChooser.setBackground(explorationColor);
+        heatmapColorChooser.addActionListener(e -> {
+            Color background = JColorChooser.showDialog(null, "Change Exploration Color",
+                    explorationColor);
+            explorationColor = background;
+            heatmapColorChooser.setBackground(background);
+        });
 
         JToggleButton jtb2 = new JToggleButton("Simulations On/Off");
         jtb2.addItemListener(ev -> {
@@ -136,21 +178,38 @@ public class VertigoView extends JFrame {
                     drawingWhat = DRAW_EXPLORATION;
             }
         });
+        JButton simGoodColorChooser = new JButton();
+        simGoodColorChooser.setPreferredSize(new Dimension(colorButSize, colorButSize));
+        simGoodColorChooser.setBackground(goodAction);
+        simGoodColorChooser.addActionListener(e -> {
+            Color background = JColorChooser.showDialog(null, "Change Good Simulation Color",
+                    goodAction);
+            goodAction = background;
+            simGoodColorChooser.setBackground(background);
+        });
+        JButton simBadColorChooser = new JButton();
+        simBadColorChooser.setPreferredSize(new Dimension(colorButSize, colorButSize));
+        simBadColorChooser.setBackground(badAction);
+        simBadColorChooser.addActionListener(e -> {
+            Color background = JColorChooser.showDialog(null, "Change Bad Simulation Color",
+                    badAction);
+            badAction = background;
+            simBadColorChooser.setBackground(background);
+        });
 
         // Create instructions panel
         JPanel instructions = new JPanel();
         JLabel insText = new JLabel("<html><div width=500>" +
                 "<center><h1>How to use</h1></center></br><hr>" +
-                "<ul><li>Step 1: Adjust game to play and level in \"Game\" tab</li>" +
-                "<li>Step 2: Click the \"Game ready\" button</li>" +
-                "<li>Step 3: Wait for plot windows to load, then continue.</li>" +
-                "<li>Step 4: Adjust algorithm parameters in \"Parameters\" tab</li>" +
-                "<li>Step 5: Click the \"Start\" button</li>" +
-                "<li>Step 6: Watch the game play out and the different plots generated</li>" +
-                "<li>Step 7: Pause/Resume the game using the \"Pause\" button</li>" +
-                "<li>Step 8: Interrupt the game using the \"Stop\" button</li>" +
-                "<li>Step 9: Analyze the final results in the tables and save plots</li>" +
-                "<li>Step 10: Click the \"Close Plots\" button at the bottom of the screen</li>" +
+                "<ul><li>Step 1: Adjust agent, game to play and level in \"Game\" tab</li>" +
+                "<li>Step 2: Adjust algorithm parameters in \"Parameters\" tab. Hover over parameter name to see description</li>" +
+                "<li>Step 3: Click the \"Start\" button</li>" +
+                "<li>Step 4: Click the \"Analysis\" button on the right and different toggles to observe plots</li>" +
+                "<li>Step 5: Click the \"Heatmap\" and \"Simulations\" toggles for position history / agent thinking plots</li>" +
+                "<li>Step 6: Pause/Resume the game using the \"Pause\" button</li>" +
+                "<li>Step 7: Interrupt the game using the \"Stop\" button</li>" +
+                "<li>Step 8: Analyze the final results in the tables and save plots</li>" +
+                "<li>Step 9: Click the \"Clear logs\" button to clean up the logs directory</li>" +
                 "<li>Repeat from step 1 with different settings. " +
                 "</div></html>");
         instructions.add(insText);
@@ -217,60 +276,62 @@ public class VertigoView extends JFrame {
 
         // Buttons
         // Create things for game panel
-        startB = new JButton("Step 2: Alg ready - Start!");
+        startB = new JButton("Start");
         startB.addActionListener(e -> {
-            if (readyGame) {
-                startGame = true;
-                startB.setEnabled(false);
-                pauseB.setEnabled(true);
-                stopB.setEnabled(true);
+            startGame = true;
+            startB.setEnabled(false);
+            pauseB.setEnabled(true);
+            stopB.setEnabled(true);
+            agentOptions.setEnabled(false);
+            gameOptions.setEnabled(false);
+            levelOptions.setEnabled(false);
 
-                // Get game and level to play
-                int game_idx = gameOptions.getSelectedIndex(); // game index
-                int lvl_idx = levelOptions.getSelectedIndex();
+            // Get game and level to play
+            int agent_idx = agentOptions.getSelectedIndex();  // agent index
+            int game_idx = gameOptions.getSelectedIndex(); // game index
+            int lvl_idx = levelOptions.getSelectedIndex();
 
-                // Settings for game
-                int seed = new Random().nextInt();
-                String RHEA = "controllers.singlePlayer.RHv2.Agent";
-                String map = gamespath + games[game_idx] + ".txt";
-                String level = gamespath + games[game_idx] + "_lvl" + lvl_idx + ".txt";
+            // Settings for game
+            int seed = new Random().nextInt();
+            String agent = agents[agent_idx];
+            String map = gamespath + games[game_idx] + ".txt";
+            String level = gamespath + games[game_idx] + "_lvl" + lvl_idx + ".txt";
 
-                // Log files
-                long time = System.currentTimeMillis();
-                String actionFile = "py/files/actions_" + game_idx + "_" + lvl_idx + "_" + time + ".log";
-                String evoFile = "py/files/evo_" + game_idx + "_" + lvl_idx + "_" + time + ".log";
-                linePlot.setDataFiles(actionFile, evoFile);
+            // Log files
+            long time = System.currentTimeMillis();
+            String actionFile = "logs/actions_" + game_idx + "_" + lvl_idx + "_" + time + ".log";
+            String evoFile = "logs/evo_" + game_idx + "_" + lvl_idx + "_" + time + ".log";
+            linePlot.setDataFiles(actionFile, evoFile);
 
-                try {
-                    new FileWriter(new File(actionFile));
-                    new FileWriter(new File(evoFile));
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-
-                // Get params
-                ParameterSet ps = getParamSet(paramInputs);
-
-                // Reset frame contents
-                mainPanel.removeAll();
-                JPanel gp = getGamePanel(gameOptions, levelOptions, readyB, startB, pauseB, stopB, evoResPanel,
-                        gameResPanel, jtb1, jtb2);
-                mainPanel.addTab("Game", gp);
-                mainPanel.addTab("Parameters", params);
-                mainPanel.addTab("Instructions", instructions);
-
-                // Add all to frame
-                getContentPane().revalidate();
-                getContentPane().repaint();
-                pack();
-
-                // Start game on separate thread
-                GameRunner gr = new GameRunner(this, gp, map, level, true, RHEA,
-                        actionFile, evoFile, seed, 0, ps, gameOptions, levelOptions, evoResTableModel, gameResTableModel,
-                        linePlot);
-                Thread t = new Thread(gr);
-                t.start();
+            try {
+                new FileWriter(new File(actionFile));
+                new FileWriter(new File(evoFile));
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
+
+            // Get params
+            ParameterSet ps = parameterSets[agent_idx].getParamSet(paramInputs);
+
+            // Reset frame contents
+            mainPanel.removeAll();
+            JPanel gp = getGamePanel(agentOptions, gameOptions, levelOptions, startB, pauseB, stopB, clearFilesBut, evoResPanel,
+                    gameResPanel, jtb1, heatmapColorChooser, jtb2, simGoodColorChooser, simBadColorChooser);
+            mainPanel.addTab("Game", gp);
+            mainPanel.addTab("Parameters", params);
+            mainPanel.addTab("Instructions", instructions);
+
+            // Add all to frame
+            getContentPane().revalidate();
+            getContentPane().repaint();
+            pack();
+
+            // Start game on separate thread
+            GameRunner gr = new GameRunner(this, gp, map, level, true, agent,
+                    actionFile, evoFile, seed, 0, ps, agentOptions, gameOptions, levelOptions, evoResTableModel, gameResTableModel,
+                    linePlot);
+            Thread t = new Thread(gr);
+            t.start();
         });
 
         pauseB = new JButton("Pause");
@@ -279,19 +340,9 @@ public class VertigoView extends JFrame {
         stopB = new JButton("Stop");
         stopB.addActionListener(e -> stopGame = true);
 
-        readyB = new JButton("Step 1: Game ready");
-        readyB.addActionListener(e -> {
-            readyGame = true;
-            startB.setEnabled(true);
-            readyB.setEnabled(false);
-            gameOptions.setEnabled(false);
-            levelOptions.setEnabled(false);
-        });
-        readyB.setToolTipText("Lock game and level and start graph display (can still adjust other parameters).");
-
         // Add all the things to the game panel
-        JPanel gamePanel = getGamePanel(gameOptions, levelOptions, readyB, startB, pauseB, stopB, evoResPanel,
-                gameResPanel, jtb1, jtb2);
+        JPanel gamePanel = getGamePanel(agentOptions, gameOptions, levelOptions, startB, pauseB, stopB, clearFilesBut, evoResPanel,
+                gameResPanel, jtb1, heatmapColorChooser, jtb2, simGoodColorChooser, simBadColorChooser);
 
         // Add tabs to main panel and panel to frame
         mainPanel.addTab("Game", gamePanel);
@@ -304,7 +355,6 @@ public class VertigoView extends JFrame {
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        startB.setEnabled(false);
         pauseB.setEnabled(false);
         stopB.setEnabled(false);
     }

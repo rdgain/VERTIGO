@@ -1,5 +1,5 @@
-package controllers.singlePlayer.RHv2.bandits;
-import controllers.singlePlayer.RHv2.utils.Picker;
+package VERTIGO.players.RHv2.bandits;
+import VERTIGO.players.RHv2.utils.Picker;
 import tools.StatSummary;
 
 import java.util.Random;

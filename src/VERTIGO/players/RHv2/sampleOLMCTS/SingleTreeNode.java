@@ -1,4 +1,4 @@
-package controllers.singlePlayer.RHv2.sampleOLMCTS;
+package VERTIGO.players.RHv2.sampleOLMCTS;
 
 import core.game.StateObservation;
 import ontology.Types;

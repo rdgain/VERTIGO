@@ -3,8 +3,8 @@ package tools;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static controllers.singlePlayer.RHv2.utils.Constants.HUGE_NEGATIVE;
-import static controllers.singlePlayer.RHv2.utils.Constants.HUGE_POSITIVE;
+import static VERTIGO.players.RHv2.utils.Constants.HUGE_NEGATIVE;
+import static VERTIGO.players.RHv2.utils.Constants.HUGE_POSITIVE;
 
 /**
  This class is used to model the statistics

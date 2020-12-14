@@ -1,13 +1,12 @@
-package controllers.singlePlayer.RHv2;
+package VERTIGO.players.RHv2;
 
 import ontology.Types;
 import tools.Vector2d;
 
 import java.util.*;
 
-import static controllers.singlePlayer.RHv2.utils.Constants.DIVERSITY_GENOTYPE;
-import static controllers.singlePlayer.RHv2.utils.Constants.DIVERSITY_PHENOTYPE;
-import static controllers.singlePlayer.RHv2.utils.Constants.HUGE_POSITIVE;
+import static VERTIGO.players.RHv2.utils.Constants.DIVERSITY_GENOTYPE;
+import static VERTIGO.players.RHv2.utils.Constants.HUGE_POSITIVE;
 
 /**
  * Created by rdgain on 6/29/2017.

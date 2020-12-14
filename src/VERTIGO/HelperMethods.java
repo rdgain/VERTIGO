@@ -1,6 +1,6 @@
 package VERTIGO;
 
-import controllers.singlePlayer.RHv2.utils.ParameterSet;
+import VERTIGO.players.RHv2.utils.RHEAParams;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -140,9 +140,10 @@ public class HelperMethods {
         return gameResPanel;
     }
 
-    static JPanel getGamePanel(JComboBox<String> gameOptions, JComboBox<Integer> levelOptions, JButton readyB, JButton startB,
-                               JButton pauseB, JButton stopB, JScrollPane resEvo, JScrollPane resGame,
-                               JToggleButton jtb1, JToggleButton jtb2) {
+    static JPanel getGamePanel(JComboBox<String> agentOptions, JComboBox<String> gameOptions, JComboBox<Integer> levelOptions, JButton startB,
+                               JButton pauseB, JButton stopB, JButton clearFilesBut, JScrollPane resEvo, JScrollPane resGame,
+                               JToggleButton jtb1, JButton heatmapColorChooser, JToggleButton jtb2,
+                               JButton simGoodColorChooser, JButton simBadColorChooser) {
         // Add things to game panel
         JPanel gamePanel = new JPanel();
         gamePanel.setLayout(new GridBagLayout());
@@ -150,10 +151,15 @@ public class HelperMethods {
         c.insets = new Insets(2,2,2,2);
         c.gridy = 0;
         c.gridx = 1;
+        gamePanel.add(new JLabel("Agent: "),c);
+        c.gridx = 2;
+        gamePanel.add(agentOptions,c);
+        c.gridy = 1;
+        c.gridx = 1;
         gamePanel.add(new JLabel("Game: "),c);
         c.gridx = 2;
         gamePanel.add(gameOptions,c);
-        c.gridy = 1;
+        c.gridy = 2;
         c.gridx = 1;
         gamePanel.add(new JLabel("Level: "),c);
         c.gridx = 2;
@@ -161,12 +167,13 @@ public class HelperMethods {
 
         JPanel buttonpanel = new JPanel();
         buttonpanel.add(jtb1);
+        buttonpanel.add(heatmapColorChooser);
         buttonpanel.add(jtb2);
+        buttonpanel.add(simGoodColorChooser);
+        buttonpanel.add(simBadColorChooser);
         gamePanel.add(buttonpanel);
 
         c.gridy = 4;
-        c.gridx = 1;
-        gamePanel.add(readyB,c);
         c.gridx = 2;
         gamePanel.add(startB,c);
         c.gridy = 5;
@@ -174,6 +181,8 @@ public class HelperMethods {
         gamePanel.add(pauseB,c);
         c.gridx = 2;
         gamePanel.add(stopB,c);
+        c.gridx = 3;
+        gamePanel.add(clearFilesBut, c);
         c.gridy = 9;
         c.gridx = 0;
         c.gridwidth = 4;
@@ -183,40 +192,6 @@ public class HelperMethods {
         c.gridwidth = 4;
         gamePanel.add(resGame,c);
         return gamePanel;
-    }
-
-    static ParameterSet getParamSet(JComponent[] paramInputs) {
-        ParameterSet paramSet = new ParameterSet();
-        paramSet.POPULATION_SIZE = Integer.parseInt(((JTextField)paramInputs[0]).getText()); // population size
-        paramSet.SIMULATION_DEPTH = Integer.parseInt(((JTextField)paramInputs[1]).getText()); // individual length
-        paramSet.INIT_TYPE = ((JComboBox)paramInputs[2]).getSelectedIndex();
-        paramSet.BUDGET_TYPE = ((JComboBox)paramInputs[3]).getSelectedIndex();
-        paramSet.MAX_FM_CALLS = Integer.parseInt(((JTextField)paramInputs[4]).getText()); // number of FM calls
-        paramSet.HEURISTIC_TYPE = ((JComboBox)paramInputs[5]).getSelectedIndex();
-        paramSet.MACRO_ACTION_LENGTH = Integer.parseInt(((JTextField)paramInputs[6]).getText());
-        paramSet.INNER_MACRO_ACTION_LENGTH = Integer.parseInt(((JTextField)paramInputs[7]).getText());
-        paramSet.BANDIT_MUTATION = (boolean)((JComboBox)paramInputs[8]).getSelectedItem();
-        paramSet.MUT_BIAS = (boolean)((JComboBox)paramInputs[9]).getSelectedItem();
-        paramSet.MUT_DIVERSITY = (boolean)((JComboBox)paramInputs[10]).getSelectedItem();
-        paramSet.CROSSOVER_TYPE = ((JComboBox)paramInputs[11]).getSelectedIndex();
-        paramSet.TREE = (boolean)((JComboBox)paramInputs[12]).getSelectedItem();
-        paramSet.CHOOSE_TREE = (boolean)((JComboBox)paramInputs[13]).getSelectedItem();
-        paramSet.SHIFT_BUFFER = (boolean)((JComboBox)paramInputs[14]).getSelectedItem();
-        paramSet.ROLLOUTS = (boolean)((JComboBox)paramInputs[15]).getSelectedItem();
-        paramSet.ROLLOUT_LENGTH = Integer.parseInt(((JTextField)paramInputs[16]).getText());
-        paramSet.REPEAT_ROLLOUT = Integer.parseInt(((JTextField)paramInputs[17]).getText());
-        paramSet.POP_DIVERSITY = (boolean)((JComboBox)paramInputs[18]).getSelectedItem();
-        paramSet.DIVERSITY_TYPE = ((JComboBox)paramInputs[19]).getSelectedIndex();
-        paramSet.D = Double.parseDouble(((JTextField)paramInputs[20]).getText());
-        paramSet.REEVALUATE = (boolean)((JComboBox)paramInputs[21]).getSelectedItem();
-        paramSet.MUTATION = Integer.parseInt(((JTextField)paramInputs[22]).getText());
-        paramSet.TOURNAMENT_SIZE = Integer.parseInt(((JTextField)paramInputs[23]).getText());
-        paramSet.NO_PARENTS = Integer.parseInt(((JTextField)paramInputs[24]).getText());
-        paramSet.RESAMPLE = Integer.parseInt(((JTextField)paramInputs[25]).getText());
-        paramSet.ELITISM = Integer.parseInt(((JTextField)paramInputs[26]).getText());
-        paramSet.DISCOUNT = Double.parseDouble(((JTextField)paramInputs[27]).getText());
-        paramSet.SHIFT_DISCOUNT = Double.parseDouble(((JTextField)paramInputs[28]).getText());
-        return paramSet;
     }
 
     public static void styleUI() {

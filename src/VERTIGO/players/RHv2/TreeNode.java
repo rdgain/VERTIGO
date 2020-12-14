@@ -1,11 +1,11 @@
-package controllers.singlePlayer.RHv2;
+package VERTIGO.players.RHv2;
 
 import tools.Utils;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import static controllers.singlePlayer.RHv2.utils.Constants.epsilon;
+import static VERTIGO.players.RHv2.utils.Constants.epsilon;
 
 /**
  * Created by Raluca on 19-Aug-16.

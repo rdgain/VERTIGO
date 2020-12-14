@@ -1,8 +1,8 @@
-package controllers.singlePlayer.RHv2;
+package VERTIGO.players.RHv2;
 
-import controllers.singlePlayer.RHv2.bandits.BanditArray;
-import controllers.singlePlayer.RHv2.bandits.BanditGene;
-import controllers.singlePlayer.RHv2.utils.ParameterSet;
+import VERTIGO.players.RHv2.bandits.BanditArray;
+import VERTIGO.players.RHv2.bandits.BanditGene;
+import VERTIGO.players.RHv2.utils.RHEAParams;
 import core.game.StateObservation;
 import core.player.Player;
 import ontology.Types;
@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-import static controllers.singlePlayer.RHv2.Population.getGridCell;
-import static controllers.singlePlayer.RHv2.utils.Constants.*;
+import static VERTIGO.players.RHv2.Population.getGridCell;
+import static VERTIGO.players.RHv2.utils.Constants.*;
 import static tools.EvoAnalyzer.analysis;
 
 //TODO: Bandits working with inner macro-actions?
@@ -33,16 +33,16 @@ public class Individual implements Comparable {
     private double diversityScore;
     private boolean canMut;
     private Random randomGenerator;
-    private StateHeuristic heuristic;
+    static public StateHeuristic heuristic;
     private RollingHorizonPlayer player;
     private Player agent;
 
     int nCalls;
 
-    static protected double[] bounds = new double[]{Double.MAX_VALUE, -Double.MAX_VALUE};
+    static public double[] bounds = new double[]{Double.MAX_VALUE, -Double.MAX_VALUE};
 
     Individual(int nActions, Random gen, StateHeuristic heuristic, RollingHorizonPlayer player, Player agent) {
-        this.heuristic = heuristic;
+        Individual.heuristic = heuristic;
         this.randomGenerator = gen;
         this.nActions = nActions;
         this.player = player;
@@ -50,7 +50,7 @@ public class Individual implements Comparable {
         this.value = new StatSummary();
         this.diversityScore = 0;
 
-        genes = new Gene[agent.getParameters().SIMULATION_DEPTH];
+        genes = new Gene[((RHEAParams)agent.getParameters()).SIMULATION_DEPTH];
         canMut = true;
         for (int i = 0; i < genes.length; i++) {
             if (nActions <= 1)  {nActions = 1; canMut = false;}
@@ -64,7 +64,7 @@ public class Individual implements Comparable {
      * @param state - current state, root of rollouts
      * @return - number of FM calls used during this call
      */
-    int evaluate(StateObservation state, ParameterSet params, TreeNode statsTree, BanditArray bandits, int[] actionDist) {
+    int evaluate(StateObservation state, RHEAParams params, TreeNode statsTree, BanditArray bandits, int[] actionDist) {
         nCalls = 0;
         StateObservation end = rollout(state, actionDist, params);
 
@@ -136,7 +136,7 @@ public class Individual implements Comparable {
         return score;
     }
 
-    private StateObservation rollout(StateObservation start, int[] actionDist, ParameterSet params) {
+    private StateObservation rollout(StateObservation start, int[] actionDist, RHEAParams params) {
         // State roll through individual action sequence
         StateObservation st = start.copy();
 
@@ -148,7 +148,7 @@ public class Individual implements Comparable {
                     int action = genes[i].getMacroAction()[m];
                     actionDist[action]++; //add action count
                     lastPos = st.getAvatarPosition();
-                    player.advanceState(st, player.getActionMapping(action), agent);
+                    player.advanceState(st, i, player.getActionMapping(action), agent);
                     nCalls += params.MACRO_ACTION_LENGTH;
                 }
 //               else {
@@ -163,7 +163,7 @@ public class Individual implements Comparable {
     }
 
     // Monte Carlo rollouts
-    private double MCrollouts(StateObservation start, ParameterSet params, StateObservation current) {
+    private double MCrollouts(StateObservation start, RHEAParams params, StateObservation current) {
         double reward = 0;
         boolean ok = true;
         for (int k = 0; k < params.REPEAT_ROLLOUT; k++) {
@@ -176,7 +176,7 @@ public class Individual implements Comparable {
                     if (bound > 0) {
                         action = acts.get(randomGenerator.nextInt(bound));
                     }
-                    ok = player.advanceState(first, action, agent);
+                    ok = player.advanceState(first, j, action, agent);
                     nCalls += params.MACRO_ACTION_LENGTH;
                 } else {
                     break;

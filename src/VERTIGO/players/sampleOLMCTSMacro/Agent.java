@@ -1,4 +1,4 @@
-package controllers.singlePlayer.sampleOLMCTSMacro;
+package VERTIGO.players.sampleOLMCTSMacro;
 
 import core.game.StateObservation;
 import core.player.AbstractPlayer;
@@ -20,9 +20,6 @@ import static tools.EvoAnalyzer.analysis;
  */
 public class Agent extends AbstractPlayer {
 
-    public int ROLLOUT_DEPTH = 10; //NUMBER OF MACRO-ACTIONS
-    private int MACRO_ACTION_LENGTH = 1; //LENGTH OF EACH MACRO-ACTION
-
     public int num_actions;
     public Types.ACTIONS[] actions;
 
@@ -30,8 +27,8 @@ public class Agent extends AbstractPlayer {
     private int m_lastMacroAction;
     private boolean m_throwTree;
 
-
     protected SingleMCTSPlayer mctsPlayer;
+    MCTSParams parameters;
 
 
     /**
@@ -41,6 +38,8 @@ public class Agent extends AbstractPlayer {
      */
     public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer)
     {
+        parameters = (MCTSParams) params;
+
         m_actionsLeft = 0;
         m_lastMacroAction = -1;
         m_throwTree = true;
@@ -60,7 +59,7 @@ public class Agent extends AbstractPlayer {
     }
 
     public SingleMCTSPlayer getPlayer(StateObservation so, ElapsedCpuTimer elapsedTimer) {
-        return new SingleMCTSPlayer(new Random(), num_actions, actions, MACRO_ACTION_LENGTH, ROLLOUT_DEPTH);
+        return new SingleMCTSPlayer(new Random(), num_actions, actions, parameters.MACRO_ACTION_LENGTH, parameters.ROLLOUT_DEPTH);
     }
 
 
@@ -81,10 +80,10 @@ public class Agent extends AbstractPlayer {
         }
 
         //Set the state observation object as the new root of the tree.
-        mctsPlayer.init(stateObs, true, params);
+        mctsPlayer.init(stateObs, true, parameters);
 
         //Determine the action using MCTS...
-        int action = mctsPlayer.run(elapsedTimer, params);
+        int action = mctsPlayer.run(elapsedTimer, parameters);
         Types.ACTIONS actionToPlay = actions[action];
 
         // Write stats about evolution during this game tick to file
@@ -153,8 +152,8 @@ public class Agent extends AbstractPlayer {
     {
         if(m_lastMacroAction != -1)
         {
-            int first = MACRO_ACTION_LENGTH - m_actionsLeft - 1;
-            for(int i = first; i < MACRO_ACTION_LENGTH; ++i)
+            int first = parameters.MACRO_ACTION_LENGTH - m_actionsLeft - 1;
+            for(int i = first; i < parameters.MACRO_ACTION_LENGTH; ++i)
             {
                 stateObs.advance(actions[m_lastMacroAction]);
             }

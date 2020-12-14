@@ -1,13 +1,11 @@
-package controllers.singlePlayer.sampleOLMCTSMacro;
+package VERTIGO.players.sampleOLMCTSMacro;
 
 import core.game.StateObservation;
 import ontology.Types;
-import tools.ElapsedCpuTimer;
 import tools.EvoAnalyzer;
 import tools.Utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 import static tools.EvoAnalyzer.analysis;

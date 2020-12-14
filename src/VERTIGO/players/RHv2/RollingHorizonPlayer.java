@@ -1,6 +1,6 @@
-package controllers.singlePlayer.RHv2;
+package VERTIGO.players.RHv2;
 
-import controllers.singlePlayer.RHv2.utils.ParameterSet;
+import VERTIGO.players.RHv2.utils.RHEAParams;
 import core.game.StateObservation;
 import core.player.Player;
 import ontology.Types;
@@ -11,11 +11,10 @@ import tracks.singlePlayer.tools.Heuristics.SimpleStateHeuristic;
 import java.util.HashMap;
 import java.util.Random;
 
-import static controllers.singlePlayer.RHv2.Agent.drawing;
-import static controllers.singlePlayer.RHv2.Agent.drawingAgent;
-import static controllers.singlePlayer.RHv2.Agent.printTree;
-import static controllers.singlePlayer.RHv2.utils.Constants.INIT_MCTS;
-import static controllers.singlePlayer.RHv2.utils.Constants.INIT_ONESTEP;
+import static VERTIGO.players.RHv2.Agent.drawingAgent;
+import static VERTIGO.players.RHv2.Agent.printTree;
+import static VERTIGO.players.RHv2.utils.Constants.INIT_MCTS;
+import static VERTIGO.players.RHv2.utils.Constants.INIT_ONESTEP;
 import static tools.EvoAnalyzer.analysis;
 
 /**
@@ -23,7 +22,7 @@ import static tools.EvoAnalyzer.analysis;
  */
 class RollingHorizonPlayer {
 
-    ParameterSet params;
+    RHEAParams params;
     private Population population;
     int numCalls;
 
@@ -94,7 +93,7 @@ class RollingHorizonPlayer {
      * @return - action to be played in the game
      */
     int run(StateObservation stateObs, Player agent) {
-        params = agent.getParameters();
+        params = (RHEAParams) agent.getParameters();
         int budget = params.MAX_FM_CALLS;
 
         init(stateObs, agent);
@@ -127,7 +126,7 @@ class RollingHorizonPlayer {
      * @return - action to play in the game
      */
     int evolve(StateObservation stateObs, Player agent, int budget) {
-        params = agent.getParameters();
+        params = (RHEAParams) agent.getParameters();
 
         // Keep track of algorithm inner workings during this game tick
         population.numGenerations = 0;
@@ -187,27 +186,42 @@ class RollingHorizonPlayer {
     /**
      * Helper method to advance state, used by both the simple and macro agent
      * @param state - starting StateObservation
+     * @param idx - index of action to execute
      * @param act - action to advance the state with
      * @param agent - agent calling this method
      */
-     boolean advanceState(StateObservation state, Types.ACTIONS act, Player agent) {
-        int i = 0;
-        boolean ok = state.isGameOver();
-        boolean end = state.isGameOver();
-        while(!end)
+     boolean advanceState(StateObservation state, int idx, Types.ACTIONS act, Player agent) {
+        boolean ok = !state.isGameOver();
+        Vector2d prePos = state.getAvatarPosition();
+        if(ok)
         {
+            if (act != null && !state.getAvailableActions().contains(act)) act = Types.ACTIONS.ACTION_NIL;
+            if (act == null) act = Types.ACTIONS.ACTION_NIL;
+            state.advance(act);
+            Vector2d pos = state.getAvatarPosition();
+
+            if (state.isGameOver()) {
+                pos = prePos;
+                pos.x += act.getKey()[1];
+                pos.y += act.getKey()[0];
+            }
+
             if (agent.viewer != null) {
-                Vector2d pos = state.getAvatarPosition();
-                drawingAgent.updatePosThinking(pos);
+                double score = Individual.heuristic.evaluateState(state);
+
+                // bounds
+                if(score < Individual.bounds[0])
+                    Individual.bounds[0] = score;
+                if(score > Individual.bounds[1])
+                    Individual.bounds[1] = score;
+
+                drawingAgent.updatePosThinking(getPopulation().numGenerations, idx, act, pos, score);
             }
             if (analysis) {
-                EvoAnalyzer.addPositionExploredFM(state.getAvatarPosition());
+                EvoAnalyzer.addPositionExploredFM(pos);
             }
-            if (act != null && !state.getAvailableActions().contains(act)) act = Types.ACTIONS.ACTION_NIL;
-            state.advance(act);
-            end = (++i >= agent.params.MACRO_ACTION_LENGTH) || state.isGameOver();
         }
-        return !ok;
+        return ok;
     }
 
     public Population getPopulation() {return population;}

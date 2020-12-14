@@ -3,7 +3,7 @@ package tracks.singlePlayer.advanced.sampleMCTS;
 import java.util.ArrayList;
 import java.util.Random;
 
-import controllers.singlePlayer.RHv2.utils.ParameterSet;
+import VERTIGO.players.RHv2.utils.RHEAParams;
 import core.game.StateObservation;
 import core.player.AbstractPlayer;
 import ontology.Types;
@@ -22,6 +22,8 @@ public class Agent extends AbstractPlayer {
     public Types.ACTIONS[] actions;
 
     protected SingleMCTSPlayer mctsPlayer;
+    int SIMULATION_DEPTH = 10, MACRO_ACTION_LENGTH = 1;
+
 
     /**
      * Public constructor with state observation and time due.
@@ -43,9 +45,7 @@ public class Agent extends AbstractPlayer {
 
         mctsPlayer = getPlayer(so, elapsedTimer);
 
-        params = new ParameterSet();
-        params.SIMULATION_DEPTH = 10;
-        params.MACRO_ACTION_LENGTH = 1;
+        params = new RHEAParams();
     }
 
     public SingleMCTSPlayer getPlayer(StateObservation so, ElapsedCpuTimer elapsedTimer) {
@@ -66,7 +66,7 @@ public class Agent extends AbstractPlayer {
         mctsPlayer.init(stateObs);
 
         //Determine the action using MCTS...
-        int action = mctsPlayer.run(elapsedTimer, params.SIMULATION_DEPTH, params.MAX_FM_CALLS);
+        int action = mctsPlayer.run(elapsedTimer, SIMULATION_DEPTH, 900);
 
         //... and return it.
         return actions[action];

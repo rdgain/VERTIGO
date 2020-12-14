@@ -1,5 +1,6 @@
-package controllers.singlePlayer.RHv2.sampleOLMCTS;
+package VERTIGO.players.RHv2.sampleOLMCTS;
 
+import VERTIGO.players.RHv2.utils.RHEAParams;
 import core.game.StateObservation;
 import core.player.AbstractPlayer;
 import ontology.Types;
@@ -17,11 +18,8 @@ import java.util.Random;
  */
 public class Agent extends AbstractPlayer {
 
-    public static int MCTS_ITERATIONS = 100;
-    public static double REWARD_DISCOUNT = 1.00;
     public int num_actions;
     public Types.ACTIONS[] actions;
-
     protected SingleMCTSPlayer mctsPlayer;
 
     /**
@@ -63,7 +61,7 @@ public class Agent extends AbstractPlayer {
         mctsPlayer.init(stateObs);
 
         //Determine the action using MCTS...
-        int action = mctsPlayer.run(elapsedTimer, params.SIMULATION_DEPTH, params.MAX_FM_CALLS);
+        int action = mctsPlayer.run(elapsedTimer, ((RHEAParams)params).SIMULATION_DEPTH, ((RHEAParams)params).MAX_FM_CALLS);
 
         //... and return it.
         return actions[action];

@@ -8,7 +8,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
 
-import controllers.singlePlayer.RHv2.utils.ParameterSet;
+import VERTIGO.players.ParameterSet;
+import VERTIGO.players.RHv2.utils.RHEAParams;
 import core.competition.CompetitionParameters;
 import core.game.Game;
 import core.game.GameDescription;

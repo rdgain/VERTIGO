@@ -1,7 +1,7 @@
-package controllers.singlePlayer.RHv2;
+package VERTIGO.players.RHv2;
 
-import controllers.singlePlayer.RHv2.utils.DrawingAgent;
-import controllers.singlePlayer.RHv2.utils.ParameterSet;
+import VERTIGO.players.RHv2.utils.DrawingAgent;
+import VERTIGO.players.RHv2.utils.RHEAParams;
 import core.game.StateObservation;
 import core.player.AbstractPlayer;
 import ontology.Types;
@@ -12,10 +12,13 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.Random;
 
-import static controllers.singlePlayer.RHv2.utils.Constants.*;
+import static VERTIGO.players.RHv2.utils.Constants.*;
 import static tools.EvoAnalyzer.analysis;
 
+@SuppressWarnings({"FieldCanBeLocal", "ConstantConditions"})
 public class Agent extends AbstractPlayer {
+
+    RHEAParams parameters;
 
     private boolean experiment = true;
     boolean realTime = false;
@@ -27,6 +30,9 @@ public class Agent extends AbstractPlayer {
     public static boolean drawing = false;
     public static int drawingWhat = DRAW_ET;
     static DrawingAgent drawingAgent;
+    public static Color goodAction = new Color(47, 214, 184);
+    public static Color badAction = new Color(207, 64, 63);
+    public static Color explorationColor = new Color(0, 0, 0);
 
     /**
      * Public constructor with state observation and time due.
@@ -38,7 +44,7 @@ public class Agent extends AbstractPlayer {
 
         if (!experiment) {
             // Set up parameters
-            params = new ParameterSet();
+            parameters = new RHEAParams();
         }
 
         // Set up random generator
@@ -72,7 +78,8 @@ public class Agent extends AbstractPlayer {
         int nextAction = player.run(stateObs, this);
 
         // Printing pop stats; how many times each action was seen in each gene
-        if (params.DEBUG) {
+        parameters = (RHEAParams) params;
+        if (parameters.DEBUG) {
             Population pop = player.getPopulation();
             System.out.println(Arrays.toString(pop.getActionCountAllGen()));
         }

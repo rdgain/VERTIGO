@@ -128,7 +128,7 @@ public class LinePlot extends JComponent {
                         if (yScore.size() > 0) {
                             double diff = score - yScore.get(i-1);
                             if (diff > 0) {
-                                yScorePlus.add(1.0);
+                                yScorePlus.add(5.0);
                                 xScorePlus.add((double) i);
                             } else if (diff < 0) {
                                 yScoreMinus.add(10.0);

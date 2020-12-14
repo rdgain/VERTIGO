@@ -2,7 +2,7 @@
 
 package core.player;
 
-import controllers.singlePlayer.RHv2.utils.ParameterSet;
+import VERTIGO.players.ParameterSet;
 import core.vgdl.VGDLViewer;
 import core.game.Game;
 import core.game.StateObservation;

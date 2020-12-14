@@ -1,6 +1,5 @@
-package controllers.singlePlayer.sampleOLMCTSMacro;
+package VERTIGO.players.sampleOLMCTSMacro;
 
-import controllers.singlePlayer.RHv2.utils.ParameterSet;
 import core.game.StateObservation;
 import ontology.Types;
 import tools.ElapsedCpuTimer;
@@ -46,9 +45,9 @@ public class SingleMCTSPlayer
      * Inits the tree with the new observation state in the root.
      * @param a_gameState current state of the game.
      */
-    public void init(StateObservation a_gameState, boolean a_throwTree, ParameterSet params)
+    public void init(StateObservation a_gameState, boolean a_throwTree, MCTSParams params)
     {
-        m_rollDepth = params.SIMULATION_DEPTH;
+        m_rollDepth = params.ROLLOUT_DEPTH;
         ma_length = params.MACRO_ACTION_LENGTH;
 
         //Set the game observation to a newly root node.
@@ -64,7 +63,7 @@ public class SingleMCTSPlayer
      * @param elapsedTimer Timer when the action returned is due.
      * @return the action to execute in the game.
      */
-    public int run(ElapsedCpuTimer elapsedTimer, ParameterSet params)
+    public int run(ElapsedCpuTimer elapsedTimer, MCTSParams params)
     {
         //This is possible (the end of the current macro-action reaches game end).
         if(m_root.rootState.isGameOver())
@@ -72,7 +71,7 @@ public class SingleMCTSPlayer
 
         //Do the search within the available time.
 //        m_root.mctsSearch(elapsedTimer);
-        m_root.mctsSearchCalls(params.MAX_FM_CALLS, params.POPULATION_SIZE);
+        m_root.mctsSearchCalls(params.MAX_FM_CALLS, params.WINDOW_SIZE);
 
         if (analysis) {
             for (SingleTreeNode child : m_root.children) {

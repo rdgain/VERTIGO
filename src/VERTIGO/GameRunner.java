@@ -1,13 +1,12 @@
 package VERTIGO;
 
+import VERTIGO.players.ParameterSet;
 import VERTIGO.plots.LinePlot;
-import controllers.singlePlayer.RHv2.utils.ParameterSet;
 import core.ArcadeMachine;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import static VERTIGO.HelperMethods.closeAllPlots;
 import static VERTIGO.HelperMethods.parseResult;
 import static VERTIGO.VertigoView.*;
 
@@ -23,15 +22,17 @@ public class GameRunner implements Runnable {
     int playerID;
     ParameterSet params;
 
-    JComboBox<String> gameOptions; JComboBox<Integer> levelOptions;
+    JComboBox<String> gameOptions;
+    JComboBox<String> agentOptions;
+    JComboBox<Integer> levelOptions;
     DefaultTableModel evoResTableModel, gameResTableModel;
 
     LinePlot linePlot;
 
     public GameRunner(JFrame frame, JPanel gamePanel, String game_file, String level_file, boolean visuals,
                       String agentNames, String actionFile, String evoFile, int randomSeed, int playerID, ParameterSet params,
-                      JComboBox<String> gameOptions, JComboBox<Integer> levelOptions, DefaultTableModel evoResTableModel, DefaultTableModel gameResTableModel,
-
+                      JComboBox<String> agentOptions, JComboBox<String> gameOptions, JComboBox<Integer> levelOptions,
+                      DefaultTableModel evoResTableModel, DefaultTableModel gameResTableModel,
                       LinePlot linePlot) {
 
         this.frame = frame;
@@ -46,6 +47,7 @@ public class GameRunner implements Runnable {
         this.playerID = playerID;
         this.params = params;
 
+        this.agentOptions = agentOptions;
         this.gameOptions = gameOptions;
         this.levelOptions = levelOptions;
         this.evoResTableModel = evoResTableModel;
@@ -69,7 +71,6 @@ public class GameRunner implements Runnable {
         startGame = false;
         stopGame = false;
         pauseGame = false;
-        readyGame = false;
         pauseB.setEnabled(false);
         stopB.setEnabled(false);
 
@@ -78,7 +79,8 @@ public class GameRunner implements Runnable {
 
         // Wait for all plots to be closed before proceeding
         linePlot.setDataFiles(null, null);
-        readyB.setEnabled(true);
+        startB.setEnabled(true);
+        agentOptions.setEnabled(true);
         gameOptions.setEnabled(true);
         levelOptions.setEnabled(true);
     }

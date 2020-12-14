@@ -1,8 +1,8 @@
-package controllers.singlePlayer.RHv2;
+package VERTIGO.players.RHv2;
 
-import controllers.singlePlayer.RHv2.bandits.BanditArray;
-import controllers.singlePlayer.RHv2.sampleOLMCTS.SingleTreeNode;
-import controllers.singlePlayer.RHv2.utils.ParameterSet;
+import VERTIGO.players.RHv2.bandits.BanditArray;
+import VERTIGO.players.RHv2.sampleOLMCTS.SingleTreeNode;
+import VERTIGO.players.RHv2.utils.RHEAParams;
 import core.game.Observation;
 import core.game.StateObservation;
 import core.player.Player;
@@ -15,7 +15,7 @@ import tracks.singlePlayer.tools.Heuristics.WinScoreHeuristic;
 
 import java.util.*;
 
-import static controllers.singlePlayer.RHv2.utils.Constants.*;
+import static VERTIGO.players.RHv2.utils.Constants.*;
 import static tools.EvoAnalyzer.analysis;
 
 /**
@@ -28,7 +28,7 @@ public class Population {
 
     private RollingHorizonPlayer player;
     private Player agent;
-    private ParameterSet params;
+    private RHEAParams params;
 
     //Bandits
     private BanditArray bandits; // bandits for each gene
@@ -46,7 +46,7 @@ public class Population {
      */
     Population(StateObservation stateObs, Player agent, RollingHorizonPlayer player, int budget) {
         this.agent = agent;
-        params = agent.getParameters();
+        params = (RHEAParams) agent.getParameters();
         heuristic = new WinScoreHeuristic(stateObs);
         this.player = player;
         numGenerations = 0;

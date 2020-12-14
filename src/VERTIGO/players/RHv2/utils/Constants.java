@@ -1,4 +1,4 @@
-package controllers.singlePlayer.RHv2.utils;
+package VERTIGO.players.RHv2.utils;
 
 /**
  * Created by rdgain on 3/20/2017.

@@ -1,6 +1,6 @@
-package controllers.singlePlayer.RHv2;
+package VERTIGO.players.RHv2;
 
-import controllers.singlePlayer.RHv2.utils.ParameterSet;
+import VERTIGO.players.RHv2.utils.RHEAParams;
 import core.game.StateObservation;
 import core.player.Player;
 
@@ -32,7 +32,7 @@ class RollingHorizonMacroPlayer extends RollingHorizonPlayer {
      * @return - next action to play as integer
      */
     int run(StateObservation stateObs, Player agent) {
-        params = agent.getParameters();
+        params = (RHEAParams) agent.getParameters();
         int budget = params.MAX_FM_CALLS;
 
         int nextAction;

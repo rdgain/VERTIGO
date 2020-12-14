@@ -1,4 +1,4 @@
-package controllers.singlePlayer.RHv2.utils;
+package VERTIGO.players.RHv2.utils;
 
 public class Picker<T> {
     // keeps just the best item so far
